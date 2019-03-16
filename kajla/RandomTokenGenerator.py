@@ -2,7 +2,6 @@ from random import randint
 from xlwt import Workbook
 import sys
 
-
 name = ''
 number_of_tokens = 0
 url = ''
@@ -65,9 +64,6 @@ while numb < number_of_tokens:
 
 print('Generated ' + str(len(token_set)) + ' tokens at all!')
 
-for token in token_set:
-    print(token)
-
 wb = Workbook()
 
 count = 0
@@ -80,4 +76,3 @@ for line in token_set:
         wb.save(url + '\\tokens' + str(xls_counter) + '.xls')
         xls_counter = xls_counter + 1
         count = 0
-
