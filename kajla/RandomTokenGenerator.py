@@ -65,6 +65,9 @@ while numb < number_of_tokens:
 
 print('Generated ' + str(len(token_set)) + ' tokens at all!')
 
+for token in token_set:
+    print(token)
+
 wb = Workbook()
 
 count = 0
