@@ -7,20 +7,15 @@ import sys
 name = ''
 number_of_tokens = 0
 url = ''
-writeToXls = False
 writeToTxt = False
 
 if len(sys.argv) == 4:
     name = str(sys.argv[1])
     number_of_tokens = int(sys.argv[2])
     url = str(sys.argv[3])
-    toXls = input('Kiírjuk a kódokat xls fájlba? Kérjük, írd ide, hogy IGEN vagy NEM: ')
-    while toXls != 'IGEN' and toXls != 'NEM':
-        toXls = input('Kiírjuk a kódokat xls fájlba? Kérjük, írd ide, hogy IGEN vagy NEM: ')
     toTxt = input('Kiírjuk a kódokat txt fájlba? Kérjük, írd ide, hogy IGEN vagy NEM: ')
     while toTxt != 'NEM' and toTxt != 'IGEN':
         toTxt = input('Kiírjuk a kódokat txt fájlba? Kérjük, írd ide, hogy IGEN vagy NEM: ')
-    writeToXls = False if toXls == 'NEM' else True
     writeToTxt = False if toTxt == 'NEM' else True
 else:
     print('Kevés paramétert adtál meg!')
@@ -28,33 +23,37 @@ else:
     sys.exit()
 
 
-def generate_token(letters_param):
-    token_arr = [None] * 12
-    counter = len(letters_param)
-    letter_index = 0
+class TokenGenerator:
+    def __init__(self):
+        pass
 
-    for letter in letters_param:
-        if counter != len(letters_param):
-            letter_index = letter_index + 1
-        random_integer = randint(letter_index, (len(token_arr) - counter))
-        token_arr[random_integer] = letter
-        letter_index = token_arr.index(letter)
-        counter = counter - 1
+    @staticmethod
+    def generate_token(letters_param):
+        token_arr = [None] * 14
+        counter = len(letters_param)
+        letter_index = 0
+        number = 4
 
-    return token_arr
+        for letter in letters_param:
+            if counter != len(letters_param):
+                letter_index = letter_index + 1
+            random_integer = randint(letter_index, (len(token_arr) - counter) - number)
+            token_arr[random_integer] = letter
+            letter_index = token_arr.index(letter)
+            counter -= 1
+            number -= 1
+
+        return token_arr
 
 
-letters = []
-
-for c in name:
-    letters.append(c.upper())
+letters = [c.upper() for c in name]
 
 token_set = set()
-generating_counter = 10000
+generating_counter = 100000
 
 numb = 0
 while numb < number_of_tokens:
-    token = generate_token(letters)
+    token = TokenGenerator.generate_token(letters)
 
     for i in range(len(token)):
         if token[i] is None:
@@ -70,50 +69,46 @@ while numb < number_of_tokens:
     else:
         print('Token string is already in the set: ' + tokenStr)
 
-    if len(token_set) % 10000 == 0:
+    if len(token_set) % 100000 == 0:
         print("Generated " + str(generating_counter) + " tokens!")
-        generating_counter = generating_counter + 10000
+        generating_counter = generating_counter + 100000
 
 print('Generated ' + str(len(token_set)) + ' tokens at all!')
 
-separate_character = ''
-print(os.uname())
+fifty_thousand = set()
+one_and_a_half_million = set()
 
-if writeToXls:
-    print('Writing tokens to xls!')
-    wb = Workbook(encoding='utf-8')
-    count = 0
-    xls_counter = 1
-    sheet = wb.add_sheet(str(xls_counter) + ' millió token', cell_overwrite_ok=True)
-    for line in token_set:
-        sheet.write(count, 0, line)
-        count = count + 1
-        if count % 10000 == 0:
-            wb.save(url + '/tokens' + str(xls_counter) + '.xls')
-            print('Saved to: ' + url + '/tokens' + str(xls_counter) + '.xls')
-            xls_counter = xls_counter + 1
-            count = 0
-
+for idx, line in enumerate(token_set):
+    if idx < 52500:
+        fifty_thousand.add(line)
+    else:
+        one_and_a_half_million.add(line)
 
 if writeToTxt:
-    with open('tokens.txt', 'w') as f:
-        print('Writing tokens to tokens.txt!')
-        for line in token_set:
+    print('Writing tokens to txt!')
+    with open('C:\\PycharmProjects\\first_tokens.txt', 'w') as f:
+        for line in fifty_thousand:
             f.write(line)
             f.write('\n')
-
-    tokens = []
-    with open('tokens.txt', 'r') as r:
-        tokens.append(r.readline())
-
-    error_Counter = 0
-    for line in tokens:
-        for inner in token_set:
-            if line == inner:
-                error_Counter += 1
-                print('ERROR')
-
-    if error_Counter == 0:
-        print('EVERYTHING IS FINE')
-    else:
-        print('SOMETHING IS WRONG')
+    with open('C:\\PycharmProjects\\second_tokens.txt', 'w') as f:
+        for line in one_and_a_half_million:
+            f.write(line)
+            f.write('\n')
+    #
+    # tokens = set()
+    # with open('C:\\PycharmProjects\\first_tokens.txt', 'r') as r:
+    #     for i in range(1, numb + 1):
+    #         tokens.add(r.readline()[:14:])
+    #
+    # print('EVERYTHING IS FINE'
+    #       if len(tokens) == (numb - 1575000) and len(tokens) == len(fifty_thousand)
+    #       else 'SOMETHING WENT WRONG')
+    #
+    # tokens.clear()
+    # with open('C:\\PycharmProjects\\second_tokens.txt', 'r') as r:
+    #     for i in range(1, numb + 1):
+    #         tokens.add(r.readline()[:14:])
+    #
+    # print('EVERYTHING IS FINE'
+    #       if len(tokens) == (numb - 52500) and len(tokens) == len(one_and_a_half_million)
+    #       else 'SOMETHING WENT WRONG')
