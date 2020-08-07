@@ -69,6 +69,7 @@ number = 0
 
 for new_token in new_tokens:
     number += 1
+    new_token = new_token[:14:]
     if old_tokens.__contains__(new_token):
         print('Error')
     elif number % 1000 == 0:
